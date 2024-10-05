@@ -6,7 +6,7 @@ on:
     inputs:
       repo_url:
         description: "the repo to run"
-        default: "https://github.com/alingse/makezero"
+        default: "https://github.com/golang/tools"
         required: true
 
 permissions:
