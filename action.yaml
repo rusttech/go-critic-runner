@@ -1,0 +1,101 @@
+name: 'Go linter Runner'
+description: 'Run linter on github repo and comment issue'
+author: 'alingse'
+inputs:
+  go_version:
+    description: |
+      Go Version
+      Default '1.22'
+    default: '1.22'
+  action:
+    description: |
+      'run' or 'submit'
+      Default 'run'
+    default: 'run'
+  yaml_config:
+    description: |
+      'run' option: the yaml style config file for 'run' action
+    default: ''
+  repo_url:
+    description: |
+      The repo to run lint, only work for github repo now
+  workdir:
+    description: |
+      'run' option: Work directory.
+      Default '.'
+    default: '.'
+  install_command:
+    description: |
+      'run' option: The install command like 'go install xxx/xxx@yyy'
+  linter_command:
+    description: |
+      'run' option: The lint command to run linter like 'xxlint --yy cc'
+  excludes:
+    description: |
+      'run' option: The output must exclude string array, can set as regex
+    default: '[]'
+  includes:
+    description: |
+      'run' option: The output must include string array, can set as regex
+    default: '[ ".go" ]'
+  issue_id:
+    description: |
+      'run' option: If linter catch some output, it will post comment on the issue
+    default: ''
+
+  submit_source_file:
+    description: |
+      'submit' option: the repo url file for 'submit' action
+      can be the file name in https://github.com/alingse/go-linter-runner/blob/main/source/ dir
+      or other file download link.
+      Default 'top.txt'
+    default: 'top.txt'
+  submit_repo_count:
+    description: |
+      'submit' option: the repo url count to submit that read from `submit_source_file` for 'submit' action
+      Default '1000'
+    default: '1000'
+  submit_workflow:
+    description: |
+      'submit' option: the workflow to auto
+      Default 'go-linter-runner.yml'
+    default: 'go-linter-runner.yml'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Go environment
+      uses: actions/setup-go@v3.2.0
+      with:
+        go-version: ${{ inputs.go_version }}
+
+    - name: Build go-linter-runner
+      run: |
+        cd $GITHUB_ACTION_PATH
+        go build -o /usr/local/bin/go-linter-runner main.go
+      shell: bash
+
+    - name: Check if and Execute run job with yaml config
+      if: ${{ inputs.action == 'run' && inputs.yaml_config != '' }}
+      run: go-linter-runner run --repo ${{ inputs.repo_url }} --yaml '${{ inputs.yaml_config }}'
+      shell: bash
+      env:
+        GH_ACTION_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+    - name: Check if and Execute run job with no-yaml config
+      if: ${{ inputs.action == 'run' && inputs.yaml_config == '' }}
+      run: go-linter-runner run --repo ${{ inputs.repo_url }} --json '${{ toJson(inputs) }}'
+      shell: bash
+      env:
+        GH_ACTION_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+    - name: Check if and Execute submit job
+      if: ${{ inputs.action == 'submit' }}
+      run: go-linter-runner submit --source ${{ inputs.submit_source_file }} --count ${{ inputs.submit_repo_count }} --workflow ${{ inputs.submit_workflow }}
+      shell: bash
+      env:
+        GH_ACTION_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+branding:
+  icon: 'check'
+  color: 'blue'

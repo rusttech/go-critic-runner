@@ -1,0 +1,10 @@
+workdir: '.'
+install_command: go install github.com/go-critic/go-critic/cmd/gocritic@latest
+linter_command: gocritic check
+includes:
+  - non-zero initialized length
+excludes:
+  - assigned by index
+  - funcall
+  - called by funcs
+issue_id: 1

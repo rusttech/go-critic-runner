@@ -1,0 +1,6 @@
+workdir: '.'
+install_command: go install github.com/Antonboom/testifylint@latest
+linter_command: testifylint --enable-all --formatter.require-f-funcs
+includes: []
+excludes: []
+issue_id: 2

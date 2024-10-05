@@ -1,0 +1,8 @@
+workdir: '.'
+install_command: go install github.com/alingse/sundrylint/cmd/sundrylint@main
+linter_command: sundrylint
+includes:
+  - go
+  - github
+excludes: []
+issue_id: 3
