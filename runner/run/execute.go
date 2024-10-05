@@ -6,12 +6,11 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"text/template"
 	"log"
 	"os"
 	"os/exec"
-	"path"
 	"strings"
+	"text/template"
 
 	"github.com/alingse/go-linter-runner/runner/utils"
 )
@@ -55,17 +54,17 @@ func Prepare(ctx context.Context, cfg *Config) error {
 
 	// TODO: check more deep
 	// check go.mod exists
-	gomodFile := path.Join(cfg.RepoDir, "go.mod")
-	if !utils.IsFileExists(gomodFile) {
-		return ErrSkipNoGoModRepo
-	}
-
-	// run go mod download
-	cmd = exec.CommandContext(ctx, "go", "mod", "download")
-	cmd.Dir = cfg.RepoDir
-	if err := runCmd(cmd); err != nil {
-		return err
-	}
+	//gomodFile := path.Join(cfg.RepoDir, "go.mod")
+	//if !utils.IsFileExists(gomodFile) {
+	//	return ErrSkipNoGoModRepo
+	//}
+	//
+	//// run go mod download
+	//cmd = exec.CommandContext(ctx, "go", "mod", "download")
+	//cmd.Dir = cfg.RepoDir
+	//if err := runCmd(cmd); err != nil {
+	//	return err
+	//}
 
 	// read default branch for repo
 	cmd = exec.CommandContext(ctx, "git", "branch", "--show-current")
@@ -189,7 +188,7 @@ func excludeLine(excludes []string, line string) bool {
 //go:embed templates/issue_comment.md
 var issueCommentTemplate string
 
-type issueCommentData struct{
+type issueCommentData struct {
 	GithubActionLink string
 	Lines            []string
 	Linter           string
@@ -199,9 +198,8 @@ type issueCommentData struct{
 func buildIssueComment(cfg *Config, outputs []string) (string, error) {
 	var data = &issueCommentData{
 		GithubActionLink: os.Getenv("GH_ACTION_LINK"),
-		Linter: cfg.LinterCfg.LinterCommand,
-		RepositoryURL: cfg.Repo,
-		
+		Linter:           cfg.LinterCfg.LinterCommand,
+		RepositoryURL:    cfg.Repo,
 	}
 	for _, line := range outputs {
 		text := buildIssueCommentLine(cfg, line)
@@ -210,9 +208,9 @@ func buildIssueComment(cfg *Config, outputs []string) (string, error) {
 	var tpl bytes.Buffer
 	tmpl, err := template.New("issue_comment").Parse(issueCommentTemplate)
 
-  if err != nil {
-       return "", err
-  }
+	if err != nil {
+		return "", err
+	}
 	if err := tmpl.Execute(&tpl, data); err != nil {
 		return "", err
 	}
