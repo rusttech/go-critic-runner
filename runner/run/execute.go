@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -15,7 +14,7 @@ import (
 	"github.com/alingse/go-linter-runner/runner/utils"
 )
 
-var ErrSkipNoGoModRepo = errors.New("skip this repo for no go.mod file exists")
+// var ErrSkipNoGoModRepo = errors.New("skip this repo for no go.mod file exists")
 
 const (
 	DiagnosticExitCode = 3
