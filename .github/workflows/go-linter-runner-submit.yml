@@ -32,7 +32,8 @@ jobs:
 
       - name: Submit repos
        # uses: alingse/go-linter-runner@main
-        uses: rusttech/go-linter-runner@main
+       # uses: rusttech/go-linter-runner@main
+        uses: rusttech/go-critic-runner@main
         with:
           action: submit
           submit_source_file: ${{ inputs.source }}

@@ -33,7 +33,7 @@ func getSourceReader(source string) (io.ReadCloser, error) {
 	}
 
 	//	url := "https://raw.githubusercontent.com/alingse/go-linter-runner/main/source/" + source
-	url := "https://raw.githubusercontent.com/rusttech/go-linter-runner/main/source/" + source
+	url := "https://raw.githubusercontent.com/rusttech/go-critic-runner/main/source/" + source
 	return getHTTPReader(url)
 }
 
